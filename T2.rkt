@@ -4,18 +4,39 @@
 ;; PARTE 1A, 1B, 1F
 
 #|
-  Expr ::= ...
+  Expr ::= (num <num>)
+         | (add Expr Expr)
+         | (sub Expr Expr)
+         | (mult Expr Expr)
+         | (tt)
+         | (ff)
+         | (if)
+
 |#
+;; Datatype que representa expresiones aritméticas y lógicas
+
+
 (deftype Expr
   ;; core
   (num n)
   (add l r)
   (sub l r)
   (mul l r)
+  (tt)
+  (ff)
   )
 
 ;; parse :: ...
-(define (parse) '???)
+(define (parse s-expr)
+  (match s-expr
+    [n #:when (number? n) (num n)]
+    [(list '+ l r) (add (parse l) (parse r))]
+    [(list '- l r) (sub (parse l) (parse r))]
+    [(list '* l r) (mul (parse l) (parse r))]
+    [bool #:when (boolean? bool) (if bool (tt) (ff))]  
+
+  )
+)
 
 ;; PARTE 1C, 1G
 
