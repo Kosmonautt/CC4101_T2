@@ -5,13 +5,13 @@
 
 #|
   Expr ::= (num <num>)
+         | (tt)
+         | (ff)
          | (add Expr Expr)
          | (sub Expr Expr)
          | (mult Expr Expr)
-         | (tt)
-         | (ff)
-         | (if)
-
+         | (leq expr expr)
+         | (ifc expr expr expr)
 |#
 ;; Datatype que representa expresiones aritméticas y lógicas
 
@@ -19,22 +19,24 @@
 (deftype Expr
   ;; core
   (num n)
+  (tt)
+  (ff)
   (add l r)
   (sub l r)
   (mul l r)
-  (tt)
-  (ff)
-  )
+  (leq l r)
+  (ifc b t f))
 
 ;; parse :: ...
 (define (parse s-expr)
   (match s-expr
     [n #:when (number? n) (num n)]
+    [bool #:when (boolean? bool) (if bool (tt) (ff))] 
     [(list '+ l r) (add (parse l) (parse r))]
     [(list '- l r) (sub (parse l) (parse r))]
     [(list '* l r) (mul (parse l) (parse r))]
-    [bool #:when (boolean? bool) (if bool (tt) (ff))]  
-
+    [(list <= l r) (leq (parse l) (parse r))]
+    [(list if b t f) (ifc (parse b) (parse t) (parse f))]
   )
 )
 
