@@ -15,7 +15,6 @@
 |#
 ;; Datatype que representa expresiones aritméticas y lógicas
 
-
 (deftype Expr
   ;; core
   (num n)
@@ -27,18 +26,17 @@
   (leq l r)
   (ifc b t f))
 
-;; parse :: ...
+;; parse :: s-expr -> Expr
+;; Transforma una s-expr a una Expr
 (define (parse s-expr)
   (match s-expr
     [n #:when (number? n) (num n)]
-    [bool #:when (boolean? bool) (if bool (tt) (ff))] 
+    [bool #:when (symbol? bool) (if (equal? bool 'true) (tt) (ff))] 
     [(list '+ l r) (add (parse l) (parse r))]
     [(list '- l r) (sub (parse l) (parse r))]
     [(list '* l r) (mul (parse l) (parse r))]
-    [(list <= l r) (leq (parse l) (parse r))]
-    [(list if b t f) (ifc (parse b) (parse t) (parse f))]
-  )
-)
+    [(list '<= l r) (leq (parse l) (parse r))]
+    [(list 'if b t f) (ifc (parse b) (parse t) (parse f))]))
 
 ;; PARTE 1C, 1G
 
