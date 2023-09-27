@@ -7,6 +7,7 @@
   Expr ::= (num <num>)
          | (tt)
          | (ff)
+         | (id <sym>)
          | (add Expr Expr)
          | (sub Expr Expr)
          | (mult Expr Expr)
@@ -20,6 +21,7 @@
   (num n)
   (tt)
   (ff)
+  (id x)
   (add l r)
   (sub l r)
   (mul l r)
@@ -31,7 +33,9 @@
 (define (parse s-expr)
   (match s-expr
     [n #:when (number? n) (num n)]
-    [bool #:when (symbol? bool) (if (equal? bool 'true) (tt) (ff))] 
+    [bool #:when (equal? bool 'true) (tt)] 
+    [bool #:when (equal? bool 'false) (ff)] 
+    [x #:when (symbol? x) (id x)]
     [(list '+ l r) (add (parse l) (parse r))]
     [(list '- l r) (sub (parse l) (parse r))]
     [(list '* l r) (mul (parse l) (parse r))]

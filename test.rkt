@@ -27,6 +27,14 @@
 (test (parse '(if (<= 3 5) 2 4)) (ifc (leq (num 3) (num 5)) (num 2) (num 4)))
 (test (parse '(if (<= (* 2 (+ 6 3)) (- 22 2)) 2 (+ 5 6))) (ifc (leq (mul (num 2) (add (num 6) (num 3))) (sub (num 22) (num 2))) (num 2) (add (num 5) (num 6))))
 
+#| Parte A |#
+
+(test (parse 'x) (id 'x))
+(test (parse '(+ 2 x)) (add (num 2) (id 'x)))
+(test (parse '(+ y x)) (add (id 'y) (id 'x)))
+(test (parse '(+ (* x (+ y 4) ) (- 2 z))) (add (mul (id 'x) (add (id 'y) (num 4))) (sub (num 2) (id 'z))))
+(test (parse '(if (<= x y) z 0)) (ifc (leq (id 'x) (id 'y)) (id 'z) (num 0)))
+
 
  
 
