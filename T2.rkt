@@ -4,19 +4,20 @@
 ;; PARTE 1A, 1B, 1F
 
 #|
-  Expr ::= (num <num>)
+  Expr ::= (num num)
          | (tt)
          | (ff)
-         | (id <sym>)
+         | (id sym)
          | (add Expr Expr)
          | (sub Expr Expr)
          | (mult Expr Expr)
-         | (leq expr expr)
-         | (ifc expr expr expr)
+         | (leq Expr Expr)
+         | (ifc Expr Expr Expr)
          | (fun (list Expr*) Expr)
-         | (app (id <sym>) (list Expr*))
+         | (app (id sym) (list Expr*))
 |#
-;; Datatype que representa expresiones aritméticas y lógicas
+;; Datatype que representa expresiones aritméticas y lógicas, con suma, resta, multiplicación, 
+;; menor e igual, if, definición de funciones y aplicación de funciones
 
 (deftype Expr
   ;; core
@@ -46,20 +47,27 @@
     [(list '<= l r) (leq (parse l) (parse r))]
     [(list 'if b t f) (ifc (parse b) (parse t) (parse f))]
     [(list 'fun (list args ...) e) (fun args (parse e))]
-    [(list f args ...) #:when (symbol? f) (app (id f) (map parse args))]
-    )
-)
+    [(list f args ...) #:when (symbol? f) (app (id f) (map parse args))]))
 
 ;; PARTE 1C, 1G
 
+#|
+  Val ::=  (numV num)
+         | (boolV Expr-Bool)
+         | (closureV args body env)
+|#
+;; Datatype que representa los valores al evaluar expresiones, estos pueden ser
+;; números, verdadero o falso y clausuras.
+
 (deftype Val
-  ;...
-  )
+  (numV n)
+  (boolV bool)
+  (closureV id body env))
 
 ;; ambiente de sustitución diferida
 (deftype Env
   (mtEnv)
-  (aEnv id val env))
+  (aEnv args val env))
 
 ;; interface ADT (abstract data type) del ambiente
 (define empty-env (mtEnv))
