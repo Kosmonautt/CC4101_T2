@@ -13,6 +13,8 @@
          | (mult Expr Expr)
          | (leq expr expr)
          | (ifc expr expr expr)
+         | (fun (list Expr*) Expr)
+         | (app (id <sym>) (list Expr*))
 |#
 ;; Datatype que representa expresiones aritméticas y lógicas
 
@@ -26,7 +28,9 @@
   (sub l r)
   (mul l r)
   (leq l r)
-  (ifc b t f))
+  (ifc b t f)
+  (fun args e)
+  (app f args))
 
 ;; parse :: s-expr -> Expr
 ;; Transforma una s-expr a una Expr
@@ -40,7 +44,11 @@
     [(list '- l r) (sub (parse l) (parse r))]
     [(list '* l r) (mul (parse l) (parse r))]
     [(list '<= l r) (leq (parse l) (parse r))]
-    [(list 'if b t f) (ifc (parse b) (parse t) (parse f))]))
+    [(list 'if b t f) (ifc (parse b) (parse t) (parse f))]
+    [(list 'fun (list args ...) e) (fun args (parse e))]
+    [(list f args ...) #:when (symbol? f) (app (id f) (map parse args))]
+    )
+)
 
 ;; PARTE 1C, 1G
 

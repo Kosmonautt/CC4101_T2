@@ -27,7 +27,7 @@
 (test (parse '(if (<= 3 5) 2 4)) (ifc (leq (num 3) (num 5)) (num 2) (num 4)))
 (test (parse '(if (<= (* 2 (+ 6 3)) (- 22 2)) 2 (+ 5 6))) (ifc (leq (mul (num 2) (add (num 6) (num 3))) (sub (num 22) (num 2))) (num 2) (add (num 5) (num 6))))
 
-#| Parte A |#
+#| Parte B |#
 
 (test (parse 'x) (id 'x))
 (test (parse '(+ 2 x)) (add (num 2) (id 'x)))
@@ -35,10 +35,17 @@
 (test (parse '(+ (* x (+ y 4) ) (- 2 z))) (add (mul (id 'x) (add (id 'y) (num 4))) (sub (num 2) (id 'z))))
 (test (parse '(if (<= x y) z 0)) (ifc (leq (id 'x) (id 'y)) (id 'z) (num 0)))
 
+(test (parse '(fun (x y) (+ x y))) (fun (list 'x 'y) (add (id 'x) (id 'y))))
+(test (parse '(fun (x y) (+ (+ x 3) y))) (fun (list 'x 'y) (add (add (id 'x) (num 3)) (id 'y))))
+(test (parse '(fun (x) x)) (fun (list 'x) (id 'x)))
+(test (parse '(fun (x) (+ x x))) (fun (list 'x) (add (id 'x) (id 'x))))
+(test (parse '(fun () 0)) (fun (list) (num 0)))
+(test (parse '(fun () (+ 2 (* 4 2)))) (fun (list) (add (num 2) (mul (num 4) (num 2)))))
+(test (parse '(fun (x y z) (* (+ x y) (- x z)))) (fun (list 'x 'y 'z) (mul (add (id 'x) (id 'y)) (sub (id 'x) (id 'z)))))
+(test (parse '(fun (a b c) (if (<= a b) c 0))) (fun (list 'a 'b 'c) (ifc (leq (id 'a) (id 'b)) (id 'c) (num 0))))
 
- 
 
-
-
-
-
+(test (parse '(my-function 2 3 4)) (app (id 'my-function) (list (num 2) (num 3) (num 4))))
+(test (parse '(fun-1 7)) (app (id 'fun-1) (list (num 7))))
+(test (parse '(fun0)) (app (id 'fun0) (list)))
+(test (parse '(my-function (+ 2 (* 3 7)) (- 10 8) (if (<= 100 5) 8 74))) (app (id 'my-function) (list (add (num 2) (mul (num 3) (num 7))) (sub (num 10) (num 8)) (ifc (leq (num 100) (num 5)) (num 8) (num 74)))))
