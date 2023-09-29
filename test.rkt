@@ -92,7 +92,27 @@
 (test (eval (parse '(* 10 (+ 1 1))) empty-env) (numV 20))
 (test (eval (parse '(* (- 4 2) (+ 1 1))) empty-env) (numV 4))
 
+(test (eval (parse 'true) empty-env) (boolV #t))
+(test (eval (parse 'false) empty-env) (boolV #f))
+(test (eval (parse '(<= 1 10)) empty-env) (boolV #t))
+(test (eval (parse '(<= 10 1)) empty-env) (boolV #f))
+(test (eval (parse '(<= (* (+ 2 5) 3) (- 10 7))) empty-env) (boolV #f))
+(test (eval (parse '(if true 1 2)) empty-env) (numV 1))
+(test (eval (parse '(if false 1 2)) empty-env) (numV 2))
+(test (eval (parse '(if (<= 3 5) 2 4)) empty-env) (numV 2))
+(test (eval (parse '(if ( <= (* 2 (+ 6 3)) (- 22 2)) 2 (+ 5 6))) empty-env) (numV 2))
+(test (eval (parse '(if ( <= (* 3 (+ 6 3)) (- 22 2)) 2 (+ 5 6))) empty-env) (numV 11))
 
-
-
-
+(test (eval (parse 'x) (extend-env 'x (numV 1) empty-env)) (numV 1))
+(test (eval (parse 'y) (extend-env 'y (numV 1) empty-env)) (numV 1))
+(test (eval (parse '(* x x)) (extend-env 'x (numV 4) empty-env)) (numV 16))
+(test (eval (parse '(+ 5 100)) (extend-env 'x (numV 4) empty-env)) (numV 105))
+(test (eval (parse '(+ 2 x)) (extend-env 'x (numV 10) empty-env)) (numV 12))
+(test (eval (parse '(+ y x)) (extend-env 'x (numV 9) (extend-env 'y (numV 7) empty-env))) (numV 16))
+(test (eval (parse '(+ y x)) (extend-env 'y (numV 9) (extend-env 'x (numV 7) empty-env))) (numV 16))
+(test (eval (parse '(+ (* x (+ y 4) ) (- 2 z))) (extend-env 'y (numV 9) (extend-env 'x (numV 7) (extend-env 'z (numV 20) empty-env)))) (numV 73))
+(test (eval (parse '(if (<= x y) z 0)) (extend-env 'z (numV 9) (extend-env 'x (numV 7) (extend-env 'y (numV 20) empty-env)))) (numV 9))
+(test (eval (parse 'bool) (extend-env 'bool (boolV #t) empty-env)) (boolV #t))
+(test (eval (parse 'bool) (extend-env 'bool (boolV #f) empty-env)) (boolV #f))
+(test (eval (parse '(if b x y)) (extend-env 'x (numV 9) (extend-env 'b (boolV #t) (extend-env 'y (numV 20) empty-env)))) (numV 9))
+(test (eval (parse '(if b x y)) (extend-env 'x (numV 9) (extend-env 'b (boolV #f) (extend-env 'y (numV 20) empty-env)))) (numV 20))

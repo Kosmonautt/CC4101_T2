@@ -87,7 +87,11 @@
 ;; PARTE 1D
 
 
-; num2num-op :: ...
+;; num2num-op :: (Number Number -> Number) -> (Val Val -> Val)
+;; Función que recibe una función binaria que realiza una operación binaria sobre dos números 
+;; y retorna un bool, retorna una fucnión que recibe dos valores (de tipo Val), realiza la 
+;;operación de la función dada originalmente y retorna el resultado de este en forma de Val
+
 (define (num2num-op f)
   (lambda (n1 n2) 
     (define v1 
@@ -101,7 +105,11 @@
 
       (if (or (equal? v1 #t) (equal? v2 #t)) (error "num-op: invalid operands") (numV (f v1 v2)))))
 
-;; num2bool-op :: ...
+
+;; num2bool-op :: (Number Number -> Boolean) -> (Val Val -> Val)
+;; Función que recibe una función binaria que realiza una operación binaria sobre dos números 
+;; y retorna un num, retorna una fucnión que recibe dos valores (de tipo Val), realiza la 
+;;operación de la función dada originalmente y retorna el resultado de este en forma de Val
 (define (num2bool-op f)
   (lambda (n1 n2) 
     (define v1 
@@ -116,31 +124,43 @@
       (if (or (equal? v1 #t) (equal? v2 #t)) (error "num-op: invalid operands") (boolV (f v1 v2)))))
 
 
-;; ...
+;; num+ :: (Val Val -> Val)
+;; Función que recibe dos Val de tipó númerico y retorna la suma de estos en forma de Val
 (define num+ (num2num-op +))
 
-;; ...
-
+;; num- :: (Val Val -> Val)
+;; Función que recibe dos Val de tipó númerico y retorna la resta de estos en forma de Val
 (define num- (num2num-op -))
 
-;; ...
-
+;; num* :: (Val Val -> Val)
+;; Función que recibe dos Val de tipó númerico y retorna la multiplicación de estos en forma de Val
 (define num* (num2num-op *))
 
-;; ...
-
+;; num<= :: (Val Val -> Val)
+;; Función que recibe dos Val de tipó númerico y retorna si el un booleano que dice si el primer valor
+;; es menor o igual al segundo
 (define num<= (num2bool-op <=))
 
 ;; PARTE 1E, 1G
 
-;; eval :: ...
+;; eval :: Expr Env -> Val
+;; evalúa una expresión con un ambiente dado
 (define (eval expr env) 
   (match expr
     [(num n) (numV n)]
+    [(tt) (boolV #t)]
+    [(ff) (boolV #f)]
+    [(id x) (env-lookup x env)]
     [(add l r) (num+ (eval l env) (eval r env))]
     [(sub l r) (num- (eval l env) (eval r env))]
     [(mul l r) (num* (eval l env) (eval r env))]  
-  ))
+    [(leq l r) (num<= (eval l env) (eval r env))]
+    [(ifc c l r) 
+                (def (boolV b) (eval c env)) 
+                (if b 
+                  (eval l env)
+                  (eval r env))]
+    ))
 
 ;; PARTE 2A
 
