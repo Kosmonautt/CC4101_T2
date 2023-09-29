@@ -53,7 +53,7 @@
 
 #|
   Val ::=  (numV num)
-         | (boolV Expr-Bool)
+         | (boolV Boolean)
          | (closureV args body env)
 |#
 ;; Datatype que representa los valores al evaluar expresiones, estos pueden ser
@@ -86,16 +86,61 @@
 
 ;; PARTE 1D
 
-;; num2num-op :: ...
-(define (num2num-op) '???)
+
+; num2num-op :: ...
+(define (num2num-op f)
+  (lambda (n1 n2) 
+    (define v1 
+      (match n1
+        [(numV n) #:when (number? n) n]
+        [else #t]))
+    (define v2 
+      (match n2
+        [(numV n) #:when (number? n) n]
+        [else #t]))
+
+      (if (or (equal? v1 #t) (equal? v2 #t)) (error "num-op: invalid operands") (numV (f v1 v2)))))
 
 ;; num2bool-op :: ...
-(define (num2bool-op) '???)
+(define (num2bool-op f)
+  (lambda (n1 n2) 
+    (define v1 
+      (match n1
+        [(numV n) #:when (number? n) n]
+        [else #t]))
+    (define v2 
+      (match n2
+        [(numV n) #:when (number? n) n]
+        [else #t]))
+
+      (if (or (equal? v1 #t) (equal? v2 #t)) (error "num-op: invalid operands") (boolV (f v1 v2)))))
+
+
+;; ...
+(define num+ (num2num-op +))
+
+;; ...
+
+(define num- (num2num-op -))
+
+;; ...
+
+(define num* (num2num-op *))
+
+;; ...
+
+(define num<= (num2bool-op <=))
 
 ;; PARTE 1E, 1G
 
 ;; eval :: ...
-(define (eval) '???)
+(define (eval expr env) 
+  (match expr
+    [(num n) (numV n)]
+    [(add l r) (num+ (eval l env) (eval r env))]
+    [(sub l r) (num- (eval l env) (eval r env))]
+    [(mul l r) (num* (eval l env) (eval r env))]  
+  ))
 
 ;; PARTE 2A
 

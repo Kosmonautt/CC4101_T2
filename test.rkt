@@ -50,4 +50,49 @@
 (test (parse '(my-function (+ 2 (* 3 7)) (- 10 8) (if (<= 100 5) 8 74))) (app (id 'my-function) (list (add (num 2) (mul (num 3) (num 7))) (sub (num 10) (num 8)) (ifc (leq (num 100) (num 5)) (num 8) (num 74)))))
 
 
-#| Parte C |#
+#| Parte D |#
+
+(test (num+ (numV 3) (numV 4)) (numV 7))
+(test (num+ (numV 4) (numV 3)) (numV 7))
+(test (num+ (numV 0) (numV 4)) (numV 4))
+(test (num+ (numV 0) (numV 0)) (numV 0))
+(test/exn (num+ (numV 4) (boolV #t)) "num-op: invalid operands")
+
+(test (num- (numV 3) (numV 4)) (numV -1))
+(test (num- (numV 4) (numV 2)) (numV 2))
+(test (num- (numV 4) (numV 0)) (numV 4))
+(test (num- (numV 0) (numV 0)) (numV 0))
+(test/exn (num+ (boolV #f) (numV 4)) "num-op: invalid operands")
+
+(test (num* (numV 3) (numV 4)) (numV 12))
+(test (num* (numV 4) (numV 3)) (numV 12))
+(test (num* (numV 0) (numV 4)) (numV 0))
+(test (num* (numV 1) (numV 7)) (numV 7))
+(test (num* (numV -5) (numV 3)) (numV -15))
+(test/exn (num* (numV #t) (boolV #f)) "num-op: invalid operands")
+
+(test (num<= (numV 3) (numV 8)) (boolV #t))
+(test (num<= (numV 3) (numV 3)) (boolV #t))
+(test (num<= (numV 3) (numV 2)) (boolV #f))
+(test (num<= (numV 15) (numV 5)) (boolV #f))
+(test/exn (num<= (numV 10) (boolV #t)) "num-op: invalid operands")
+(test/exn (num<= (boolV #f) (numV 12)) "num-op: invalid operands")
+(test/exn (num<= (boolV #t) (boolV #f)) "num-op: invalid operands")
+
+#| Parte E |#
+
+(test (eval (parse 1) empty-env) (numV 1))
+(test (eval (parse 155) empty-env) (numV 155))
+(test (eval (parse '(+ 5 10)) empty-env) (numV 15))
+(test (eval (parse '(+ 0 1)) empty-env) (numV 1))
+(test (eval (parse '(- 2 2)) empty-env) (numV 0))
+(test (eval (parse '(+ 7 (- 6 3))) empty-env) (numV 10))
+(test (eval (parse '(- 10 (- 3 3))) empty-env) (numV 10))
+(test (eval (parse '(* 10 2)) empty-env) (numV 20))
+(test (eval (parse '(* 10 (+ 1 1))) empty-env) (numV 20))
+(test (eval (parse '(* (- 4 2) (+ 1 1))) empty-env) (numV 4))
+
+
+
+
+
