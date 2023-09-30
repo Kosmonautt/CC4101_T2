@@ -145,11 +145,20 @@
 
 ;; extend-env-multiple :: Listof[id] Listof[Expr] Env -> Env
 ;; 
+
 (define (extend-env-multiple ids Vals env)
-  (define (extend-env-multiple-rec ids Vals env) 
-    0)
-  ((if (not (= (length ids) (length Vals))) extend-env-multiple-rec (error "Wrong number of args")))
-  )
+  (define (extend-env-multiple-rec ids_ Vals_ env_) 
+    (if (= (length ids_) 0) env (aEnv (car ids_) (car Vals_) (extend-env-multiple-rec (cdr ids_) (cdr Vals_) env_)) ))
+
+  (if (= (length ids) (length Vals)) (extend-env-multiple-rec ids Vals env) (error "number of arguments given do not match number of arguments defined on the function")))
+
+;; eval-list :: Listof[Expr] Env -> Listof[Val]
+;;
+
+(define (eval-list Exprs env)
+  (match Exprs
+    ['() '()]
+    [(cons h t) (append (list (eval h env)) (eval-list t env))]))
 
 ;; eval :: Expr Env -> Val
 ;; evalúa una expresión con un ambiente dado
@@ -169,10 +178,13 @@
                   (eval l env)
                   (eval r env))]
     [(fun id body) (closureV id body env)]
-    [(app f e) (def (closureV the-arg the-body the-claus-env) (eval f env)) 
-              0
+    [(app f e) (def (closureV the-args the-body the-claus-env) (eval f env)) 
+               (def the-ext-env (extend-env-multiple the-args (eval-list e env) the-claus-env)) 
+               (eval the-body the-ext-env)
     ]
     ))
+
+(define l (list ))
 
 ;; PARTE 2A
 

@@ -118,11 +118,45 @@
 (test (eval (parse '(if b x y)) (extend-env 'x (numV 9) (extend-env 'b (boolV #t) (extend-env 'y (numV 20) empty-env)))) (numV 9))
 (test (eval (parse '(if b x y)) (extend-env 'x (numV 9) (extend-env 'b (boolV #f) (extend-env 'y (numV 20) empty-env)))) (numV 20))
 
+
+(define l_id_1 (list 'x 'y 'z 'b))
+(define l_id_2 (list 'a 'b))
+(define l_val_1 (list (numV 10) (numV 15) (numV -4) (boolV #f)))
+(define l_val_2 (list (numV 4) (numV 7)))
+(define l_val_3 (list (numV 5) (numV 17) (numV 22) (boolV #t)))
+(define l_env (aEnv 'v (numV 8) empty-env))
+
+(test (extend-env-multiple l_id_1 l_val_1 empty-env) (aEnv 'x (numV 10) (aEnv 'y (numV 15) (aEnv 'z (numV -4) (aEnv 'b (boolV #f) empty-env)))))
+(test (extend-env-multiple l_id_1 l_val_1 l_env) (aEnv 'x (numV 10) (aEnv 'y (numV 15) (aEnv 'z (numV -4) (aEnv 'b (boolV #f) (aEnv 'v (numV 8) empty-env))))))
+(test (extend-env-multiple l_id_1 l_val_3 l_env) (aEnv 'x (numV 5) (aEnv 'y (numV 17) (aEnv 'z (numV 22) (aEnv 'b (boolV #t) (aEnv 'v (numV 8) empty-env))))))
+(test (extend-env-multiple l_id_2 l_val_2 empty-env) (aEnv 'a (numV 4) (aEnv 'b (numV 7) empty-env)))
+(test (extend-env-multiple l_id_2 l_val_2 l_env) (aEnv 'a (numV 4) (aEnv 'b (numV 7) (aEnv 'v (numV 8) empty-env))))
+(test/exn (extend-env-multiple l_id_1 l_val_2 empty-env) "number of arguments given do not match number of arguments defined on the function")
+(test/exn (extend-env-multiple l_id_1 l_val_2 l_env) "number of arguments given do not match number of arguments defined on the function")
+(test/exn (extend-env-multiple l_id_2 l_val_1 empty-env) "number of arguments given do not match number of arguments defined on the function")
+(test/exn (extend-env-multiple l_id_2 l_val_1 l_env) "number of arguments given do not match number of arguments defined on the function")
+
+
+(test (eval-list (list) empty-env) (list))
+(test (eval-list (list (num 5)) empty-env) (list (numV 5)))
+(test (eval-list (list (num 5) (tt) (num 10)) empty-env) (list (numV 5) (boolV #t) (numV 10)))
+(test (eval-list (list (add (num 70) (num 2)) (num 10)) empty-env) (list (numV 72) (numV 10)))
+(test (eval-list (list (id 'x)) (aEnv 'x (numV 10) empty-env)) (list (numV 10)))
+(test (eval-list (list (add (num 7) (id 'x))) (aEnv 'x (numV 10) empty-env)) (list (numV 17)))
+(test (eval-list (list (add (num 7) (id 'x)) (ifc (id 'b) (num 5) (num 8))) (aEnv 'x (numV 10) (aEnv 'b (boolV #t) empty-env))) (list (numV 17) (numV 5)))
+(test (eval-list (list (add (num 7) (id 'x)) (ifc (id 'b) (num 5) (mul (id 'x) (num 8)))) (aEnv 'x (numV 10) (aEnv 'b (boolV #f) empty-env))) (list (numV 17) (numV 80)))
+
+
 (test (eval (parse '(fun (x y) (+ x y))) empty-env) (closureV '(x y) (add (id 'x) (id 'y)) empty-env))
 (define f_1 (eval (parse '(fun (x y) (+ x y))) empty-env))
-; (test (eval (parse '(f 7 3)) (extend-env 'f f_1 empty-env)) (numV 10))
+(test (eval (parse '(f 7 3)) (extend-env 'f f_1 empty-env)) (numV 10))
+(test (eval (parse '(f (+ 70 2) 10)) (extend-env 'f f_1 empty-env)) (numV 82))
+(define f_2 (eval (parse '(fun (x y z) (* z (+ x y)))) empty-env))
+(test (eval (parse '(f 7 3 6)) (extend-env 'f f_2 empty-env)) (numV 60))
+(test/exn (eval (parse '(f 3)) (extend-env 'f f_1 empty-env)) "number of arguments given do not match number of arguments defined on the function")
 
-(define l1 (list 1 2 3))
-(length l1)
 
-(not (= 1 2))
+; (def (app the-id the-args) (parse '(f 7 3 6))) 
+
+; (cdr (cdr the-args))
+
