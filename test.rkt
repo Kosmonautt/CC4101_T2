@@ -48,6 +48,7 @@
 (test (parse '(fun-1 7)) (app (id 'fun-1) (list (num 7))))
 (test (parse '(fun0)) (app (id 'fun0) (list)))
 (test (parse '(my-function (+ 2 (* 3 7)) (- 10 8) (if (<= 100 5) 8 74))) (app (id 'my-function) (list (add (num 2) (mul (num 3) (num 7))) (sub (num 10) (num 8)) (ifc (leq (num 100) (num 5)) (num 8) (num 74)))))
+(test (parse '(f (+ 9 (* 2 7)) (- 10 x) 4)) (app (id 'f) (list (add (num 9) (mul (num 2) (num 7))) (sub (num 10) (id 'x)) (num 4))))
 
 
 #| Parte D |#
@@ -116,3 +117,12 @@
 (test (eval (parse 'bool) (extend-env 'bool (boolV #f) empty-env)) (boolV #f))
 (test (eval (parse '(if b x y)) (extend-env 'x (numV 9) (extend-env 'b (boolV #t) (extend-env 'y (numV 20) empty-env)))) (numV 9))
 (test (eval (parse '(if b x y)) (extend-env 'x (numV 9) (extend-env 'b (boolV #f) (extend-env 'y (numV 20) empty-env)))) (numV 20))
+
+(test (eval (parse '(fun (x y) (+ x y))) empty-env) (closureV '(x y) (add (id 'x) (id 'y)) empty-env))
+(define f_1 (eval (parse '(fun (x y) (+ x y))) empty-env))
+; (test (eval (parse '(f 7 3)) (extend-env 'f f_1 empty-env)) (numV 10))
+
+(define l1 (list 1 2 3))
+(length l1)
+
+(not (= 1 2))
