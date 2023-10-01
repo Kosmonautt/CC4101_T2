@@ -143,9 +143,10 @@
 
 ;; PARTE 1E, 1G
 
-;; extend-env-multiple :: Listof[id] Listof[Expr] Env -> Env
-;; 
-
+;; extend-env-multiple :: Listof[id] Listof[Val] Env -> Env
+;; función que recibe una lista de identificadores, una lista de Val y un ambiente, 
+;; devuelve un ambiente con los identificadores que tenía el ambiente dado más los identeificadores
+;; nuevos con sus valores respectivos
 (define (extend-env-multiple ids Vals env)
   (define (extend-env-multiple-rec ids_ Vals_ env_) 
     (if (= (length ids_) 0) env (aEnv (car ids_) (car Vals_) (extend-env-multiple-rec (cdr ids_) (cdr Vals_) env_)) ))
@@ -153,7 +154,8 @@
   (if (= (length ids) (length Vals)) (extend-env-multiple-rec ids Vals env) (error "number of arguments given do not match number of arguments defined on the function")))
 
 ;; eval-list :: Listof[Expr] Env -> Listof[Val]
-;;
+;; función que recibe una lista de expresiones y un ambiente, retorna una lista
+;; de los valores al evaluar cada expresión de la lista
 
 (define (eval-list Exprs env)
   (match Exprs
@@ -177,7 +179,7 @@
                 (if b 
                   (eval l env)
                   (eval r env))]
-    [(fun id body) (closureV id body env)]
+    [(fun id body) (closureV id body env)]               
     [(app f e) (def (closureV the-args the-body the-claus-env) (eval f env)) 
                (def the-ext-env (extend-env-multiple the-args (eval-list e env) the-claus-env)) 
                (eval the-body the-ext-env)
