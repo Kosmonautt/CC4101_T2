@@ -185,5 +185,11 @@
 (test/exn (eval (parse '(f 5)) (extend-env 'f f_0 empty-env)) "number of arguments given do not match number of arguments defined on the function")
 (test/exn (eval (parse '(f)) (extend-env 'f f_1 empty-env)) "number of arguments given do not match number of arguments defined on the function")
 
+#| Parte E |#
 
+(test (parse '(tuple 1)) (tupl (list (num 1))))
+(test (parse '(tuple 1 2 3)) (tupl (list (num 1) (num 2) (num 3))))
+(test (parse '(tuple (+ 1 2) (- (* 2 x) (+ 8 9)) 3)) (tupl (list (add (num 1) (num 2)) (sub (mul (num 2) (id 'x)) (add (num 8) (num 9))) (num 3))))
+(test (parse '(tuple 2 true (if (<= x 4) 9 22))) (tupl (list (num 2) (tt) (ifc (leq (id 'x) (num 4)) (num 9) (num 22)))))
+(test (parse '(tuple (fun (x y z) (* (+ x y) (- z 10))) (f_2 (+ 4 (- 10 3)) (<= x y)) (f_0))) (tupl (list (fun (list 'x 'y 'z) (mul (add (id 'x) (id 'y)) (sub (id 'z) (num 10)))) (app (id 'f_2) (list (add (num 4) (sub (num 10) (num 3))) (leq (id 'x) (id 'y)))) (app (id 'f_0) (list)))))
 

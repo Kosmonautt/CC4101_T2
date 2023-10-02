@@ -15,12 +15,13 @@
          | (ifc Expr Expr Expr)
          | (fun (list Expr*) Expr)
          | (app (id sym) (list Expr*))
+         | (tupl (list Expr*))
 |#
 ;; Datatype que representa expresiones aritméticas y lógicas, con suma, resta, multiplicación, 
-;; menor e igual, if, definición de funciones y aplicación de funciones
+;; menor e igual, if, definición de funciones y aplicación de funciones, creación de tuplas de otras
+;; expresiones y projección de componente de la tupla
 
 (deftype Expr
-  ;; core
   (num n)
   (tt)
   (ff)
@@ -31,7 +32,8 @@
   (leq l r)
   (ifc b t f)
   (fun args e)
-  (app f args))
+  (app f args)
+  (tupl exprs))
 
 ;; parse :: s-expr -> Expr
 ;; Transforma una s-expr a una Expr
@@ -47,7 +49,8 @@
     [(list '<= l r) (leq (parse l) (parse r))]
     [(list 'if b t f) (ifc (parse b) (parse t) (parse f))]
     [(list 'fun (list args ...) e) (fun args (parse e))]
-    [(list f args ...) #:when (symbol? f) (app (id f) (map parse args))]))
+    [(list f args ...) #:when (and (symbol? f) (not (equal? f 'tuple))) (app (id f) (map parse args))]
+    [(list 'tuple exprs ...) (tupl (map parse exprs))]))
 
 ;; PARTE 1C, 1G
 
