@@ -16,6 +16,7 @@
          | (fun (list Expr*) Expr)
          | (app (id sym) (list Expr*))
          | (tupl (list Expr*))
+         | (proj Expr Expr)
 |#
 ;; Datatype que representa expresiones aritméticas y lógicas, con suma, resta, multiplicación, 
 ;; menor e igual, if, definición de funciones y aplicación de funciones, creación de tuplas de otras
@@ -33,7 +34,8 @@
   (ifc b t f)
   (fun args e)
   (app f args)
-  (tupl exprs))
+  (tupl exprs)
+  (proj t i))
 
 ;; parse :: s-expr -> Expr
 ;; Transforma una s-expr a una Expr
@@ -49,8 +51,9 @@
     [(list '<= l r) (leq (parse l) (parse r))]
     [(list 'if b t f) (ifc (parse b) (parse t) (parse f))]
     [(list 'fun (list args ...) e) (fun args (parse e))]
-    [(list f args ...) #:when (and (symbol? f) (not (equal? f 'tuple))) (app (id f) (map parse args))]
-    [(list 'tuple exprs ...) (tupl (map parse exprs))]))
+    [(list f args ...) #:when (and (symbol? f) (and (not (equal? f 'tuple)) (not (equal? f 'proj)))) (app (id f) (map parse args))]
+    [(list 'tuple exprs ...) (tupl (map parse exprs))]
+    [(list 'proj tupl i) (proj (parse tupl) (parse i))]))
 
 ;; PARTE 1C, 1G
 

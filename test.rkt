@@ -192,4 +192,10 @@
 (test (parse '(tuple (+ 1 2) (- (* 2 x) (+ 8 9)) 3)) (tupl (list (add (num 1) (num 2)) (sub (mul (num 2) (id 'x)) (add (num 8) (num 9))) (num 3))))
 (test (parse '(tuple 2 true (if (<= x 4) 9 22))) (tupl (list (num 2) (tt) (ifc (leq (id 'x) (num 4)) (num 9) (num 22)))))
 (test (parse '(tuple (fun (x y z) (* (+ x y) (- z 10))) (f_2 (+ 4 (- 10 3)) (<= x y)) (f_0))) (tupl (list (fun (list 'x 'y 'z) (mul (add (id 'x) (id 'y)) (sub (id 'z) (num 10)))) (app (id 'f_2) (list (add (num 4) (sub (num 10) (num 3))) (leq (id 'x) (id 'y)))) (app (id 'f_0) (list)))))
+(test (parse '(tuple 1 2 (tuple 1 (tuple 1 2)))) (tupl (list (num 1) (num 2) (tupl (list (num 1) (tupl (list (num 1) (num 2))))))))
+
+(test (parse '(proj (tuple 10 20 30) 1)) (proj (tupl (list (num 10) (num 20) (num 30))) (num 1)))
+(test (parse '(proj (tuple 10 (+ 20 4) true) 2)) (proj (tupl (list (num 10) (add (num 20) (num 4)) (tt))) (num 2)))
+(test (parse '(proj (tuple 10 20 30) (proj (tuple 4 3 2 1) 2))) (proj (tupl (list (num 10) (num 20) (num 30))) (proj (tupl (list (num 4) (num 3) (num 2) (num 1))) (num 2))))
+
 
