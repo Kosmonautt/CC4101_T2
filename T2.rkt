@@ -169,6 +169,14 @@
     ['() '()]
     [(cons h t) (append (list (eval h env)) (eval-list t env))]))
 
+;; i-element :: List num -> val
+;; función que recibe una lista y un número, devuelve 
+;; el elemento en la lista que índica el número
+(define (i-element l i)
+  (if (= i 1) 
+      (car l) 
+      (i-element (cdr l) (- i 1))))
+
 ;; eval :: Expr Env -> Val
 ;; evalúa una expresión con un ambiente dado
 (define (eval expr env) 
@@ -191,6 +199,9 @@
                (def the-ext-env (extend-env-multiple the-args (eval-list e env) the-claus-env)) 
                (eval the-body the-ext-env)]
     [(tupl exprs) (tuplV (eval-list exprs env))]
+    [(proj t i) (def (tuplV vals) (eval t env))
+                (def (numV i-num) (eval i env))
+                (i-element vals i-num)]
     ))
 
 (define l (list ))

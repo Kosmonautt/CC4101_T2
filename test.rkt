@@ -185,7 +185,7 @@
 (test/exn (eval (parse '(f 5)) (extend-env 'f f_0 empty-env)) "number of arguments given do not match number of arguments defined on the function")
 (test/exn (eval (parse '(f)) (extend-env 'f f_1 empty-env)) "number of arguments given do not match number of arguments defined on the function")
 
-#| Parte E |#
+#| Parte F |#
 
 (test (parse '(tuple 1)) (tupl (list (num 1))))
 (test (parse '(tuple 1 2 3)) (tupl (list (num 1) (num 2) (num 3))))
@@ -208,3 +208,20 @@
 (test (eval (parse '(tuple 2 true (if (<= x 4) 9 22))) (extend-env 'x (numV 5) empty-env)) (tuplV (list (numV 2) (boolV #t) (numV 22))))
 (test (eval (parse '(tuple (fun (x y z) (* (+ x y) (- z 10))) 10)) empty-env) (tuplV (list (closureV '(x y z) (mul (add (id 'x) (id 'y)) (sub (id 'z) (num 10))) empty-env) (numV 10)))) 
 (test (eval (parse '(tuple 1 2 (tuple 1 (tuple 1 2)))) empty-env) (tuplV (list (numV 1) (numV 2) (tuplV (list (numV 1) (tuplV (list (numV 1) (numV 2))))))))
+
+
+(test (i-element (list 10 20 30 40) 1) 10)
+(test (i-element (list 10 20 30 40) 2) 20)
+(test (i-element (list 10 20 30 40) 3) 30)
+(test (i-element (list 10 20 30 40) 4) 40)
+
+
+(test (eval (parse '(proj (tuple 10 20 30) 1)) empty-env) (numV 10))
+(test (eval (parse '(proj (tuple 10 20 30) 2)) empty-env) (numV 20))
+(test (eval (parse '(proj (tuple 10 20 30) 3)) empty-env) (numV 30))
+(test (eval (parse '(proj (tuple 10 (+ 20 4) true) 2)) empty-env) (numV 24))
+(test (eval (parse '(proj (tuple 10 (+ 20 4) true) 3)) empty-env) (boolV #t))
+(test (eval (parse '(proj (tuple (fun (x y z) (* (+ x y) (- z 10))) 20 30) 1)) empty-env) (closureV '(x y z) (mul (add (id 'x) (id 'y)) (sub (id 'z) (num 10))) empty-env))
+(test (eval (parse '(proj (tuple 10 20 30) x)) (extend-env 'x (numV 1) empty-env)) (numV 10))
+(test (eval (parse '(proj (tuple 10 20 30) x)) (extend-env 'x (numV 2) empty-env)) (numV 20))
+(test (eval (parse '(proj (tuple 10 20 30) x)) (extend-env 'x (numV 3) empty-env)) (numV 30))
