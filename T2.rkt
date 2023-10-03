@@ -68,7 +68,8 @@
 (deftype Val
   (numV n)
   (boolV bool)
-  (closureV id body env))
+  (closureV id body env)
+  (tuplV vals))
 
 ;; ambiente de sustitución diferida
 (deftype Env
@@ -188,8 +189,8 @@
     [(fun id body) (closureV id body env)]               
     [(app f e) (def (closureV the-args the-body the-claus-env) (eval f env)) 
                (def the-ext-env (extend-env-multiple the-args (eval-list e env) the-claus-env)) 
-               (eval the-body the-ext-env)
-    ]
+               (eval the-body the-ext-env)]
+    [(tupl exprs) (tuplV (eval-list exprs env))]
     ))
 
 (define l (list ))

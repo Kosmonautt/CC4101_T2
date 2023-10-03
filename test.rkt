@@ -199,3 +199,12 @@
 (test (parse '(proj (tuple 10 20 30) (proj (tuple 4 3 2 1) 2))) (proj (tupl (list (num 10) (num 20) (num 30))) (proj (tupl (list (num 4) (num 3) (num 2) (num 1))) (num 2))))
 
 
+#| Parte G |#
+
+(test (eval (parse '(tuple 1)) empty-env) (tuplV (list (numV 1))))
+(test (eval (parse '(tuple 1 2 3)) empty-env) (tuplV (list (numV 1) (numV 2) (numV 3))))
+(test (eval (parse '(tuple (+ 1 2) (- (* 2 x) (+ 8 9)) 3)) (extend-env 'x (numV 10) empty-env)) (tuplV (list (numV 3) (numV 3) (numV 3))))
+(test (eval (parse '(tuple 2 true (if (<= x 4) 9 22))) (extend-env 'x (numV 4) empty-env)) (tuplV (list (numV 2) (boolV #t) (numV 9))))
+(test (eval (parse '(tuple 2 true (if (<= x 4) 9 22))) (extend-env 'x (numV 5) empty-env)) (tuplV (list (numV 2) (boolV #t) (numV 22))))
+(test (eval (parse '(tuple (fun (x y z) (* (+ x y) (- z 10))) 10)) empty-env) (tuplV (list (closureV '(x y z) (mul (add (id 'x) (id 'y)) (sub (id 'z) (num 10))) empty-env) (numV 10)))) 
+(test (eval (parse '(tuple 1 2 (tuple 1 (tuple 1 2)))) empty-env) (tuplV (list (numV 1) (numV 2) (tuplV (list (numV 1) (tuplV (list (numV 1) (numV 2))))))))
