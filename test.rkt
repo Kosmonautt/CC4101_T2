@@ -225,3 +225,55 @@
 (test (eval (parse '(proj (tuple 10 20 30) x)) (extend-env 'x (numV 1) empty-env)) (numV 10))
 (test (eval (parse '(proj (tuple 10 20 30) x)) (extend-env 'x (numV 2) empty-env)) (numV 20))
 (test (eval (parse '(proj (tuple 10 20 30) x)) (extend-env 'x (numV 3) empty-env)) (numV 30))
+
+#| P1 |#
+
+#| Parte A |#
+     
+#| swap* |#
+(define f_sub '(fun (x y) (- x y))) ;; s-expr
+(define f_cond '(fun (x y) (+ (if x 100 0) (if y 50 0)))) ;; s-expr
+(define f_sub_V (eval (parse f_sub) empty-env)) ;; Val (closure)
+(define f_cond_V (eval (parse f_cond) empty-env)) ;; Val (closure)
+
+(test (eval (parse '(f 4 3)) (extend-env 'f f_sub_V empty-env)) (numV 1))
+(test (eval (parse '(f 3 4)) (extend-env 'f f_sub_V empty-env)) (numV -1))
+(test (eval (parse '(f 8 4)) (extend-env 'f f_sub_V empty-env)) (numV 4))
+(test (eval (parse '(f 4 8)) (extend-env 'f f_sub_V empty-env)) (numV -4))
+
+(test (eval (parse '(f false false)) (extend-env 'f f_cond_V empty-env)) (numV 0))
+(test (eval (parse '(f false true)) (extend-env 'f f_cond_V empty-env)) (numV 50))
+(test (eval (parse '(f true false)) (extend-env 'f f_cond_V empty-env)) (numV 100))
+(test (eval (parse '(f true true)) (extend-env 'f f_cond_V empty-env)) (numV 150))
+
+(define my-program-f_sub (parse (list 'swap f_sub)))
+(define my-program-f_cond (parse (list 'swap f_cond)))
+
+(define f_sub_swap_V (eval my-program-f_sub     ;; mismo closure de la línea 236 pero con los argumentos en orden contrario (y diferente env)
+                        (extend-env 'swap swap* empty-env)))    
+
+(define f_cond_swap_V (eval my-program-f_cond     ;; mismo closure de la línea 237 pero con los argumentos en orden contrario (y diferente env)
+                        (extend-env 'swap swap* empty-env))) 
+
+;; se comparan los resultados de las funciones originales y sus contrapartes con swap, verificando que dan lo mismo con los parámetros en orden contrario
+(test (eval (parse '(f 4 3)) (extend-env 'f f_sub_V empty-env)) (eval (parse '(f 3 4)) (extend-env 'f f_sub_swap_V empty-env)))
+(test (eval (parse '(f 3 4)) (extend-env 'f f_sub_V empty-env)) (eval (parse '(f 4 3)) (extend-env 'f f_sub_swap_V empty-env)))
+(test (eval (parse '(f 8 4)) (extend-env 'f f_sub_V empty-env)) (eval (parse '(f 4 8)) (extend-env 'f f_sub_swap_V empty-env)))
+(test (eval (parse '(f 4 8)) (extend-env 'f f_sub_V empty-env)) (eval (parse '(f 8 4)) (extend-env 'f f_sub_swap_V empty-env)))
+
+(test (eval (parse '(f true true)) (extend-env 'f f_cond_V empty-env)) (eval (parse '(f true true)) (extend-env 'f f_cond_swap_V empty-env)))
+(test (eval (parse '(f true false)) (extend-env 'f f_cond_V empty-env)) (eval (parse '(f false true)) (extend-env 'f f_cond_swap_V empty-env)))
+(test (eval (parse '(f false true)) (extend-env 'f f_cond_V empty-env)) (eval (parse '(f true false)) (extend-env 'f f_cond_swap_V empty-env)))
+(test (eval (parse '(f false false)) (extend-env 'f f_cond_V empty-env)) (eval (parse '(f false false)) (extend-env 'f f_cond_swap_V empty-env)))
+
+#| curry* |#
+(define f_sub '(fun (x y) (- x y))) ;; s-expr
+(define f_cond '(fun (x y) (+ (if x 100 0) (if y 50 0)))) ;; s-expr
+(define f_sub_V (eval (parse f_sub) empty-env)) ;; Val (closure)
+(define f_cond_V (eval (parse f_cond) empty-env)) ;; Val (closure)
+
+(define my-program-f_sub_200 (parse (list 'curry f_sub 200)))  
+(define my-program-f_sub_15 (parse (list 'curry f_sub 15)))
+
+(define my-program-f_cond_true (parse (list 'curry f_cond true)))
+(define my-program-f_cond_false (parse (list 'curry f_cond false)))

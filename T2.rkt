@@ -208,7 +208,10 @@
 
 ;; PARTE 2A
 
-(define swap* '???)
+(define swap* (closureV
+                (list 'f)
+                (fun '(y x) (app (id 'f) (list (id 'x) (id 'y))))
+                empty-env))
 (define curry* '???)
 (define uncurry* '???)
 (define partial* '???)
