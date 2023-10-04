@@ -266,14 +266,37 @@
 (test (eval (parse '(f false true)) (extend-env 'f f_cond_V empty-env)) (eval (parse '(f true false)) (extend-env 'f f_cond_swap_V empty-env)))
 (test (eval (parse '(f false false)) (extend-env 'f f_cond_V empty-env)) (eval (parse '(f false false)) (extend-env 'f f_cond_swap_V empty-env)))
 
-#| curry* |#
-(define f_sub '(fun (x y) (- x y))) ;; s-expr
-(define f_cond '(fun (x y) (+ (if x 100 0) (if y 50 0)))) ;; s-expr
-(define f_sub_V (eval (parse f_sub) empty-env)) ;; Val (closure)
-(define f_cond_V (eval (parse f_cond) empty-env)) ;; Val (closure)
+#| partial* |#
+(define my-program-f_sub_200 (parse (list 'partial f_sub 200)))  
+(define my-program-f_sub_15 (parse (list 'partial f_sub 15)))
 
-(define my-program-f_sub_200 (parse (list 'curry f_sub 200)))  
-(define my-program-f_sub_15 (parse (list 'curry f_sub 15)))
+(define my-program-f_cond_true (parse (list 'partial f_cond 'true)))
+(define my-program-f_cond_false (parse (list 'partial f_cond 'false)))
 
-(define my-program-f_cond_true (parse (list 'curry f_cond true)))
-(define my-program-f_cond_false (parse (list 'curry f_cond false)))
+(define f_sub_partial_200 (eval my-program-f_sub_200     
+                            (extend-env 'partial partial* empty-env)))  
+
+(define f_sub_partial_15 (eval my-program-f_sub_15     
+                            (extend-env 'partial partial* empty-env)))  
+
+(define f_cond_partial_true (eval my-program-f_cond_true     
+                            (extend-env 'partial partial* empty-env)))  
+
+(define f_cond_partial_false (eval my-program-f_cond_false     
+                            (extend-env 'partial partial* empty-env)))  
+
+(test (eval (parse '(f 10)) (extend-env 'f f_sub_partial_200 empty-env)) (numV 190))
+(test (eval (parse '(f 100)) (extend-env 'f f_sub_partial_200 empty-env)) (numV 100))
+(test (eval (parse '(f 210)) (extend-env 'f f_sub_partial_200 empty-env)) (numV -10))
+
+(test (eval (parse '(f 10)) (extend-env 'f f_sub_partial_15 empty-env)) (numV 5))
+(test (eval (parse '(f 100)) (extend-env 'f f_sub_partial_15 empty-env)) (numV -85))
+(test (eval (parse '(f 210)) (extend-env 'f f_sub_partial_15 empty-env)) (numV -195))
+
+(test (eval (parse '(f true)) (extend-env 'f f_cond_partial_true empty-env)) (numV 150))
+(test (eval (parse '(f false)) (extend-env 'f f_cond_partial_true empty-env)) (numV 100))
+
+(test (eval (parse '(f true)) (extend-env 'f f_cond_partial_false empty-env)) (numV 50))
+(test (eval (parse '(f false)) (extend-env 'f f_cond_partial_false empty-env)) (numV 0))
+
+;; ejemplo sin define

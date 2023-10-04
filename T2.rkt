@@ -212,9 +212,15 @@
                 (list 'f)
                 (fun '(y x) (app (id 'f) (list (id 'x) (id 'y))))
                 empty-env))
+
 (define curry* '???)
+
 (define uncurry* '???)
-(define partial* '???)
+
+(define partial* (closureV
+                  (list 'f 'a)
+                  (fun '(b) (app (id 'f) (list (id 'a) (id 'b))))
+                  empty-env))
 
 ;; PARTE 2B
 
