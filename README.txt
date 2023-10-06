@@ -1,0 +1,1 @@
+No logré implementar la función Run pero hay una explicación de cuál era mi idea para implementarla
