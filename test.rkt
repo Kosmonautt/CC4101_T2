@@ -430,8 +430,36 @@
 (test (global-f_names globals) (list 'swap 'curry 'uncurry 'partial))
 (test (global-f_names globals2) (list 'swap 'curry 'uncurry 'partial 'sum 'sub 'mul))
 
+(test (in-list 'swap (list 'swap 'curry 'uncurry 'partial)) true)
+(test (in-list 'curry (list 'swap 'curry 'uncurry 'partial)) true)
+(test (in-list 'uncurry (list 'swap 'curry 'uncurry 'partial)) true)
+(test (in-list 'partial (list 'swap 'curry 'uncurry 'partial)) true)
+(test (in-list 'sum (list 'swap 'curry 'uncurry 'partial)) false)
+(test (in-list 'swap (list )) false)
+
+(test (replace-in-s-expr '((swap (fun (x y) (<= x y))) 1 2) 'f_0 globals) '(f_0 1 2))
+(test (replace-in-s-expr '((partial (fun (x y) (<= x y)) 1) 2) 'f_0 globals) '(f_0 2))
 
 
+(define test-2-args '(+ ((swap (fun (x y) (- x y))) 1 2) ((swap (fun (x y) (* x y))) 1 2)))
+
+;; se le aplica una vez el reemplazo
+(define test-2-args-app1 (replace-in-s-expr test-2-args 'f_0 globals))
+;; se le aplica una segunda vez el reemplazo
+(define test-2-args-app2 (replace-in-s-expr test-2-args-app1 'f_1 globals))
+
+;; ESTOS TESTS FALLAN
+;(test test-2-args-app1 '(+ (f_0 1 2) ((swap (fun (x y) (* x y))) 1 2)))
+;(test test-2-args-app1 '(+ (f_0 1 2) (f_1 1 2)))
+
+;; Al final no pude implementar la función run, mi idea era que cada vez que hubiera
+;; una aplicación de una función de las globals está fuera reemplazada por un identificador
+;; único en la s-expr y que se guardara en el env la aplicación de estas (de tipo Val)
+
+;; Idea de Run
+
+;; '((swap (fun (x y) (<= x y))) 1 2) -> '('app1 1 2)
+
+(test (eval (parse '(app1 1 2)) (extend-env 'app1 (eval (parse '(swap (fun (x y) (<= x y)))) (extend-env 'swap swap* empty-env)) empty-env)) (boolV #f))
 
  
-                        

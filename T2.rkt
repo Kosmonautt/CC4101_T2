@@ -4,18 +4,18 @@
 ;; PARTE 1A, 1B, 1F
 
 #|
-  Expr ::= (num num)
+  Expr ::= (num <num>)
          | (tt)
          | (ff)
-         | (id sym)
+         | (id <sym>)
          | (add Expr Expr)
          | (sub Expr Expr)
          | (mult Expr Expr)
          | (leq Expr Expr)
          | (ifc Expr Expr Expr)
-         | (fun (list Expr*) Expr)
-         | (app (id sym) (list Expr*))
-         | (tupl (list Expr*))
+         | (fun (list Expr) Expr)
+         | (app (id <sym>) (list Expr))
+         | (tupl (list Expr))
          | (proj Expr Expr)
 |#
 ;; Datatype que representa expresiones aritméticas y lógicas, con suma, resta, multiplicación, 
@@ -236,5 +236,28 @@
     ['() '()]
     [(cons h t) (cons (car h) (global-f_names t))]))
 
+;; in-list :: Symbol Listof(Symbol) -> bool
+;; revisa si un simbolo está en una lista de simbolos, si es que
+;; está retorna true, si no, retorna false
+(define (in-list s l)
+  (match l
+    [(cons h t) (if (equal? s h) true (in-list s t))]
+    [t (if (equal? s t) true false)]
+    ['() false]))
+
+;; replace-in-s-expr :: s-expr symbol globals -> s-expr 
+;; recibe una s-expresion y remplaza la primera aplicación de
+;; una función global que encuentre por el symbol dado
+(define (replace-in-s-expr s-expr remp globals)
+  (match s-expr
+    [(list s args ...) #:when (and (symbol? s) (in-list s (global-f_names globals))) remp]
+    [(cons h t) (cons (replace-in-s-expr h remp globals) (replace-in-s-expr t remp globals))]
+    [h h]
+  )
+)
+
 ;; run :: ...
-(define (run) '???)
+; (define (run s-expr globals) 
+;   (define s-expr-reemp (replace-in-s-expr s-expr 'f_0 globals))
+;   ()
+; ) 
