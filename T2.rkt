@@ -218,7 +218,10 @@
                 (fun '(a) (fun '(b) (app (id 'f) (list (id 'a) (id 'b)))))
                 empty-env))
 
-(define uncurry* '???)
+(define uncurry* (closureV
+                  (list 'f)
+                  (fun '(x y) (app (app (id 'f) (list (id 'x))) (list (id 'y))))
+                  empty-env))
 
 (define partial* (closureV
                   (list 'f 'a)

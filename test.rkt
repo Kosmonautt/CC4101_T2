@@ -304,6 +304,61 @@
 (test (eval (parse '(f false)) (extend-env 'f f_cond_curry_false empty-env)) (numV 0))
 
 
+#| uncurry* |#
+;; funciones currificadas (s-expr)
+(define f_sub_curry_s '(fun (x) (fun (y) (- x y)))) ;; s-expr
+(define f_cond_curry_s '(fun (x) (fun (y) (+ (if x 100 0) (if y 50 0))))) ;; s-expr
+;; evaluadas (closure)
+(define f_sub_curry_2 (eval (parse f_sub_curry_s) empty-env)) ;; Val (closure)
+(define f_cond_curry_2 (eval (parse f_cond_curry_s) empty-env)) ;; Val (closure)
+
+;; se comprueba que tengan el comportamiento esperado con los mismos tests de la parte anterior
+(define f_sub_curry_200_2 (eval (parse (list 'f 200))     
+                            (extend-env 'f f_sub_curry_2 empty-env)))  
+
+(define f_sub_curry_15_2 (eval (parse (list 'f 15))     
+                            (extend-env 'f f_sub_curry_2 empty-env)))   
+
+(define f_cond_curry_true_2 (eval (parse (list 'f 'true))     
+                            (extend-env 'f f_cond_curry_2 empty-env)))   
+
+(define f_cond_curry_false_2 (eval (parse (list 'f 'false))     
+                            (extend-env 'f f_cond_curry_2 empty-env)))   
+
+;; se prueban las funciones
+(test (eval (parse '(f 10)) (extend-env 'f f_sub_curry_200_2 empty-env)) (numV 190))
+(test (eval (parse '(f 100)) (extend-env 'f f_sub_curry_200_2 empty-env)) (numV 100))
+(test (eval (parse '(f 210)) (extend-env 'f f_sub_curry_200_2 empty-env)) (numV -10))
+
+(test (eval (parse '(f 10)) (extend-env 'f f_sub_curry_15_2 empty-env)) (numV 5))
+(test (eval (parse '(f 100)) (extend-env 'f f_sub_curry_15_2 empty-env)) (numV -85))
+(test (eval (parse '(f 210)) (extend-env 'f f_sub_curry_15_2 empty-env)) (numV -195))
+
+(test (eval (parse '(f true)) (extend-env 'f f_cond_curry_true_2 empty-env)) (numV 150))
+(test (eval (parse '(f false)) (extend-env 'f f_cond_curry_true_2 empty-env)) (numV 100))
+
+(test (eval (parse '(f true)) (extend-env 'f f_cond_curry_false_2 empty-env)) (numV 50))
+(test (eval (parse '(f false)) (extend-env 'f f_cond_curry_false_2 empty-env)) (numV 0))
+
+;; se crean las versiones uncurrificadas
+(define f_sub_uncurry (eval (parse (list 'uncurry f_sub_curry_s))     
+                                (extend-env 'uncurry uncurry* empty-env))) 
+
+(define f_cond_uncurry (eval (parse (list 'uncurry f_cond_curry_s))     
+                                (extend-env 'uncurry uncurry* empty-env))) 
+
+;; se testea que funcionen apropiadamente
+(test (eval (parse '(f 4 3)) (extend-env 'f f_sub_uncurry empty-env)) (numV 1))
+(test (eval (parse '(f 3 4)) (extend-env 'f f_sub_uncurry empty-env)) (numV -1))
+(test (eval (parse '(f 8 4)) (extend-env 'f f_sub_uncurry empty-env)) (numV 4))
+(test (eval (parse '(f 4 8)) (extend-env 'f f_sub_uncurry empty-env)) (numV -4))
+
+(test (eval (parse '(f false false)) (extend-env 'f f_cond_uncurry empty-env)) (numV 0))
+(test (eval (parse '(f false true)) (extend-env 'f f_cond_uncurry empty-env)) (numV 50))
+(test (eval (parse '(f true false)) (extend-env 'f f_cond_uncurry empty-env)) (numV 100))
+(test (eval (parse '(f true true)) (extend-env 'f f_cond_uncurry empty-env)) (numV 150))
+
+
 #| partial* |#
 (define my-program-f_sub_200 (parse (list 'partial f_sub 200)))  
 (define my-program-f_sub_15 (parse (list 'partial f_sub 15)))
