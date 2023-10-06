@@ -213,7 +213,10 @@
                 (fun '(y x) (app (id 'f) (list (id 'x) (id 'y))))
                 empty-env))
 
-(define curry* '???)
+(define curry* (closureV
+                (list 'f)
+                (fun '(a) (fun '(b) (app (id 'f) (list (id 'a) (id 'b)))))
+                empty-env))
 
 (define uncurry* '???)
 
