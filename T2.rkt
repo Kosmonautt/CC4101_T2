@@ -167,7 +167,7 @@
 (define (eval-list Exprs env)
   (match Exprs
     ['() '()]
-    [(cons h t) (append (list (eval h env)) (eval-list t env))]))
+    [(cons h t) (cons (eval h env) (eval-list t env))]))
 
 ;; i-element :: List num -> val
 ;; función que recibe una lista y un número, devuelve 
@@ -204,8 +204,6 @@
                 (i-element vals i-num)]
     ))
 
-(define l (list ))
-
 ;; PARTE 2A
 
 (define swap* (closureV
@@ -229,6 +227,14 @@
                   empty-env))
 
 ;; PARTE 2B
+
+;; global-f_names :: (Listof (Pair Symbol Val)) -> (Listof Symbol)
+;; recibe una lista de valores globales y retorna una lista con los nombres 
+;; de los valores
+(define (global-f_names globals)
+  (match globals
+    ['() '()]
+    [(cons h t) (cons (car h) (global-f_names t))]))
 
 ;; run :: ...
 (define (run) '???)

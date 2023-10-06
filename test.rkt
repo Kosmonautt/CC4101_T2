@@ -391,3 +391,47 @@
 
 (test (eval (parse '(f true)) (extend-env 'f f_cond_partial_false empty-env)) (numV 50))
 (test (eval (parse '(f false)) (extend-env 'f f_cond_partial_false empty-env)) (numV 0))
+
+
+#| Parte B |#
+
+(define sum* (closureV
+                (list 'x 'y)
+                (add (id 'x) (id 'y))
+                empty-env))
+
+(define sub* (closureV
+                (list 'x 'y)
+                (sub (id 'x) (id 'y))
+                empty-env))
+
+(define mul* (closureV
+                (list 'x 'y)
+                (mul (id 'x) (id 'y))
+                empty-env))
+
+
+(define globals ( list
+                    (cons 'swap swap*)
+                    (cons 'curry curry*)
+                    (cons 'uncurry uncurry*)
+                    (cons 'partial partial* )))
+
+(define globals2 ( list
+                    (cons 'swap swap*)
+                    (cons 'curry curry*)
+                    (cons 'uncurry uncurry*)
+                    (cons 'partial partial* )
+                    (cons 'sum sum*)
+                    (cons 'sub sub*)
+                    (cons 'mul mul*)))
+
+(test (global-f_names (list )) (list ))
+(test (global-f_names globals) (list 'swap 'curry 'uncurry 'partial))
+(test (global-f_names globals2) (list 'swap 'curry 'uncurry 'partial 'sum 'sub 'mul))
+
+
+
+
+ 
+                        
