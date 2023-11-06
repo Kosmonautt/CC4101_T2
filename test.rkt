@@ -463,3 +463,4 @@
 (test (eval (parse '(app1 1 2)) (extend-env 'app1 (eval (parse '(swap (fun (x y) (<= x y)))) (extend-env 'swap swap* empty-env)) empty-env)) (boolV #f))
 
  
+(parse '((swap (fun (x y)(<= x y))) 1 2))
